@@ -18,7 +18,8 @@ screen = ctk.CTk()
 screen.geometry("1000x600")
 screen.title('Easy Finance Tracking')
 screen.resizable(0,0)
-
+icon = resource_path('assets/icon.ico')
+screen.iconbitmap(icon)
 # --- images ---
 safe_img = ctk.CTkImage(
     light_image=Image.open(resource_path("assets/safe.png")),
