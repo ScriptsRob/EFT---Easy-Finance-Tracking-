@@ -1,0 +1,7 @@
+customtkinter
+PIL
+os
+sys
+json
+currency_converter
+yfinance
