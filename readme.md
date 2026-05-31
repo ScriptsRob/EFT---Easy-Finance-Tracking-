@@ -8,4 +8,5 @@
 3. News Page
     - Search for News
     - The newest finance news straight from yahoo finance web API
+`\n\n`
 `Download and try it!`
