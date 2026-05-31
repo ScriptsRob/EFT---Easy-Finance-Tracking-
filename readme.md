@@ -16,4 +16,5 @@
 ***
 
 ## Download
-`Download and try it!`
+
+Run: `python -m pip install -r requirements.txt`
