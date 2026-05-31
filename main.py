@@ -31,8 +31,8 @@ MONEY_FILE = 'money.json'
 LOGS_FILE = 'logs.json'
 SEETING_FILE = 'setting.json'
 
-logs_path = resource_path('D:/prom_project/logs.json')
-money_path= resource_path("D:/prom_project/money.json")
+logs_path = 'logs.json'
+money_path= 'money.json'
 
 font_for_guis = ('Times News Roman',26,'bold')
 font_for_text = ('Times News Roman',16,'bold')

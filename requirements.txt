@@ -1,7 +1,4 @@
 customtkinter
-PIL
-os
-sys
-json
+pillow
 currency_converter
 yfinance
