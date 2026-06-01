@@ -427,7 +427,7 @@ settings_page_btn = ctk.CTkButton(windows_choice_frame,
 )
 settings_page_btn.grid(row=0,
                    column=3,
-                   padx=40,
+                   padx=120,
                    pady=10
 )
 
