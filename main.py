@@ -23,8 +23,32 @@ screen.iconbitmap(icon)
 # --- images ---
 safe_img = ctk.CTkImage(
     light_image=Image.open(resource_path("assets/safe.png")),
-    size=(200, 200)
+    size=(200,200)
 )
+
+bank_page_img = ctk.CTkImage(
+    light_image=Image.open(resource_path("assets/bank_page.png")),
+    size=(25,25)
+)
+
+currency_img = ctk.CTkImage(
+    light_image=Image.open(resource_path("assets/currency_page.png")),
+    size=(25,25)
+)
+
+news_img = ctk.CTkImage(
+    light_image=Image.open(resource_path("assets/news_page.png")),
+    size=(25,25)
+)
+
+settings_img = ctk.CTkImage(
+    light_image=Image.open(resource_path("assets/settings_page.png")),
+    size=(25,25)
+)
+
+
+
+
 # --- Variables ---
 COLOR_TXT = "#FFFFFF"
 
@@ -35,8 +59,8 @@ SEETING_FILE = 'setting.json'
 logs_path = 'logs.json'
 money_path= 'money.json'
 
-font_for_guis = ('Times News Roman',26,'bold')
-font_for_text = ('Times News Roman',16,'bold')
+font_for_guis = ('Inter',26,'bold')
+font_for_text = ('San Francisco',16,'bold')
 
 system_currency = 'USD'
 currencies = [
@@ -365,6 +389,7 @@ confirm_frame.lift()
 # --- Home page btn ---
 bank_page_btn = ctk.CTkButton(windows_choice_frame,
                               text='Bank',
+                              image=bank_page_img,
                               command= lambda: show_page('bank')
 )
 bank_page_btn.grid(row=0,
@@ -375,6 +400,7 @@ bank_page_btn.grid(row=0,
 # --- Currency Convertor btn ---
 converotr_page_btn = ctk.CTkButton(windows_choice_frame,
                               text='Currency convertor',
+                              image=currency_img,
                               command= lambda: show_page('curency')
 )
 converotr_page_btn.grid(row=0,
@@ -385,6 +411,7 @@ converotr_page_btn.grid(row=0,
 # --- Analysis btn ---
 analysis_page_btn = ctk.CTkButton(windows_choice_frame,
                               text='News',
+                              image=news_img,
                               command= lambda: show_page('news')
 )
 analysis_page_btn.grid(row=0,
@@ -395,11 +422,12 @@ analysis_page_btn.grid(row=0,
 # --- Settings btn ---
 settings_page_btn = ctk.CTkButton(windows_choice_frame,
                               text='Settings',
+                              image= settings_img,
                               command= lambda: show_page('settings')
 )
 settings_page_btn.grid(row=0,
                    column=3,
-                   padx=120,
+                   padx=40,
                    pady=10
 )
 
@@ -500,7 +528,7 @@ news_search_btn.place(relx= 0.65, rely= 0.08, anchor = 'center')
 
 news_textbox = ctk.CTkTextbox(news_frame,width=900,height=350,font=font_for_text)
 news_textbox.place(relx= 0.5, rely= 0.55,anchor = 'center')
-
+#
 main_page_news()
 # ====================================
 bank_text_label.lift()
