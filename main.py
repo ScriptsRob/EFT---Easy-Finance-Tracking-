@@ -5,6 +5,9 @@ import os, sys
 import json as js
 import currency_converter as c
 import yfinance as yf
+
+
+
 def resource_path(relative_path):
 
     try:
@@ -20,6 +23,51 @@ screen.title('Easy Finance Tracking')
 screen.resizable(0,0)
 icon = resource_path('assets/icon.ico')
 screen.iconbitmap(icon)
+
+
+# --- Variables ---
+COLOR_TXT = "#FFFFFF"
+
+MONEY_FILE = 'money.json'
+LOGS_FILE = 'logs.json'
+SEETING_FILE = 'setting.json'
+
+logs_path = 'logs.json'
+money_path= 'money.json'
+
+font_for_guis = ('Inter',26,'bold')
+font_for_text = ('San Francisco',16,'bold')
+
+with open(SEETING_FILE, "r", encoding="utf-8") as file:
+    settings = js.load(file)
+    system_currency = settings['currency']
+currencies = [
+    "USD",
+    "EUR",
+    "GBP",
+    "CAD",
+    "AUD",
+    "CHF",
+    "JPY",
+    "CNY",
+    "PLN",
+    "CZK",
+    "HUF",
+    "TRY",
+    "ILS",
+    "SGD",
+    "NZD"
+]
+
+
+themes= ['Dark','Light','System']
+
+state = 'bank'
+btn_state= '+'
+confirm_state = None
+
+convertor = c.CurrencyConverter()
+
 # --- images ---
 safe_img = ctk.CTkImage(
     light_image=Image.open(resource_path("assets/safe.png")),
@@ -46,56 +94,32 @@ settings_img = ctk.CTkImage(
     size=(25,25)
 )
 
+# --- Json creating ---
+if not os.path.exists(MONEY_FILE):
+    with open(MONEY_FILE, "w", encoding="utf-8") as file:
+        js.dump({"money": 0}, file, indent=4)
 
+if not os.path.exists(LOGS_FILE):
+    with open(LOGS_FILE, "w", encoding="utf-8") as file:
+        js.dump({}, file, indent=4)
+if not os.path.exists(MONEY_FILE):
+    with open(MONEY_FILE, "w", encoding="utf-8") as file:
+        js.dump({"money": 0}, file, indent=4)
 
+if not os.path.exists(LOGS_FILE):
+    with open(LOGS_FILE, "w", encoding="utf-8") as file:
+        js.dump({}, file, indent=4)
 
-# --- Variables ---
-COLOR_TXT = "#FFFFFF"
-
-MONEY_FILE = 'money.json'
-LOGS_FILE = 'logs.json'
-SEETING_FILE = 'setting.json'
-
-logs_path = 'logs.json'
-money_path= 'money.json'
-
-font_for_guis = ('Inter',26,'bold')
-font_for_text = ('San Francisco',16,'bold')
-
-system_currency = 'USD'
-currencies = [
-    "USD",
-    "EUR",
-    "GBP",
-    "CAD",
-    "AUD",
-    "CHF",
-    "JPY",
-    "CNY",
-    "PLN",
-    "CZK",
-    "HUF",
-    "TRY",
-    "ILS",
-    "SGD",
-    "NZD"
-]
-
-
-themes= ['Dark','Light','System']
-state = 'bank'
-btn_state= '+'
-confirm_state = None
-convertor = c.CurrencyConverter()
 # --- functions ---
+
 def change_sys_currency(v):
-    global system_curreny, money_value
+    global system_currency, money_value
     new_currency = system_currency_option.get()
 
-    converted_money_value = convertor.convert(money_value, system_curreny, new_currency)
-    money_value = round(converted_money_value, 2)
-    system_curreny = new_currency
-    bank_text_label.configure(text=f"{money_value} {system_curreny}")
+    converted_money_value = convertor.convert(money_value, system_currency, new_currency)
+    money_value = round(converted_money_value, None)
+    system_currency = new_currency
+    bank_text_label.configure(text=f"{money_value} {system_currency}")
 
     with open(SEETING_FILE, "w", encoding="utf-8") as file:
         js.dump({'theme': theme_option.get() , 'currency': new_currency},file, indent=4)
@@ -117,6 +141,7 @@ def search_for_news():
         
     except Exception as e:
         news_textbox.insert("end", f"Error searching ticker '{ticker}': {str(e)}",'red')
+
 def display_news_list(news_items):
     if not news_items:
         news_textbox.tag_config("red", foreground="red")
@@ -160,7 +185,7 @@ def reset_money():
         os.remove(money_path)
         with open(MONEY_FILE, "w", encoding="utf-8") as file:
             js.dump({"money": 0}, file, indent=4)    
-            bank_text_label.configure(text = 0)
+            bank_text_label.configure(text =f"{0}  {system_currency}")
             money_value= 0
 
         bank_textbox.configure(state = 'normal')
@@ -252,7 +277,7 @@ def money_cashing():
         try:
             money_value += int(entry_val)
                 
-            bank_text_label.configure(text=f"{money_value} {system_curreny}")
+            bank_text_label.configure(text=f"{money_value} {system_currency}")
             textbox_insert(entry_log, entry_val)
             bank_money_entry.delete(0, "end")
             bank_money_entry_log.delete(0, "end")
@@ -270,22 +295,10 @@ def money_cashing():
         except ValueError:
             pass
         
-# --- Json init ---
-if not os.path.exists(MONEY_FILE):
-    with open(MONEY_FILE, "w", encoding="utf-8") as file:
-        js.dump({"money": 0}, file, indent=4)
-
-if not os.path.exists(LOGS_FILE):
-    with open(LOGS_FILE, "w", encoding="utf-8") as file:
-        js.dump({}, file, indent=4)
-
+# --- Json reading ---
 with open(MONEY_FILE,"r",encoding="utf-8") as file:
     data = js.load(file)
 money_value = data["money"]
-
-if not os.path.exists(SEETING_FILE):
-    with open(SEETING_FILE,'w',encoding='utf-8') as file:
-        js.dump({'theme': 'dark', 'currency': system_currency},file,indent=4)
 
 with open(SEETING_FILE, "r", encoding="utf-8") as file:
     settings= js.load(file)
@@ -293,27 +306,23 @@ system_curreny = settings['currency']
 screen._set_appearance_mode(settings['theme'])
 
 # --- frames ---
-# --- choose page f rame---
+
+# --- choose page frame---
 windows_choice_frame = ctk.CTkFrame(screen,
                                     width=960,
                                     height=50,
-                                    
 )
 windows_choice_frame.grid_propagate(False) 
-
 windows_choice_frame.grid(row=0,
                           column=0,
                           padx=20,
                           pady=20,
 )
-
-
 # --- bank frame ---
 bank_frame = ctk.CTkFrame(screen,
                           width=960,
                           height =450,
-                          corner_radius=30,
-                                    
+                          corner_radius=30,                              
 )
 bank_frame.grid_propagate(False) 
 bank_frame.pack_propagate(False)
@@ -326,8 +335,7 @@ bank_frame.grid(row=1,
 curency_frame = ctk.CTkFrame(screen,
                           width=960,
                           height =450,
-                          corner_radius=30,
-                                    
+                          corner_radius=30,                                    
 )
 curency_frame.grid_propagate(False) 
 curency_frame.pack_propagate(False)
@@ -340,8 +348,7 @@ curency_frame.grid(row=1,
 news_frame = ctk.CTkFrame(screen,
                           width=960,
                           height =450,
-                          corner_radius=30
-                                    
+                          corner_radius=30                                    
 )
 news_frame.grid_propagate(False) 
 news_frame.pack_propagate(False)
@@ -354,8 +361,7 @@ news_frame.grid(row=1,
 settings_frame = ctk.CTkFrame(screen,
                           width=960,
                           height =450,
-                          corner_radius=30,
-                                    
+                          corner_radius=30,                                    
 )
 settings_frame.grid_propagate(False) 
 settings_frame.pack_propagate(False)
@@ -367,21 +373,25 @@ settings_frame.grid(row=1,
 settings_funcs_frame = ctk.CTkFrame(settings_frame,
                           width=400,
                           height =420,
-                          corner_radius=25,
-                                    
+                          corner_radius=25,                                    
 )
 settings_funcs_frame.grid_propagate(False) 
 settings_funcs_frame.pack_propagate(False)
 settings_funcs_frame.place(relx = 0.25,y=225,anchor ='center')
 
 #--- Confirm Frame ---
-confirm_frame = ctk.CTkFrame(screen,width=400,height=200,corner_radius=25,bg_color="transparent")
+confirm_frame = ctk.CTkFrame(screen,
+                             width=400,
+                             height=200,
+                             corner_radius=25,
+                             bg_color="transparent"
+)
 confirm_frame.grid_propagate(False) 
 confirm_frame.pack_propagate(False)
 confirm_frame.place(relx=0.5, y = 300, anchor = 'center')
 confirm_frame.lift()
 
-# --- widjets ---
+# --- Widjets ---
 
 
 
@@ -438,6 +448,7 @@ bank_label.place(relx=0.5,y = 100,anchor="center" )
 
 bank_text_label = ctk.CTkLabel(bank_frame,text=f"{money_value} {system_curreny}",font=('Arial',40,'bold'),text_color=COLOR_TXT)
 bank_text_label.place(relx=0.5,y = 200,anchor="center" )
+
 bank_money_entry_log = ctk.CTkEntry(bank_frame,
                                 justify="center",
                                 corner_radius=30 ,
@@ -471,7 +482,7 @@ bank_reset_money_btn.place(relx=0.6,y = 230,)
 with open(LOGS_FILE, 'r', encoding='utf-8') as file:
     logs = js.load(file)
 
-# --- logs insert ---
+# --- Logs Insert ---
 bank_textbox.configure(state='normal') 
 
 for k, v in logs.items():
@@ -480,7 +491,7 @@ for k, v in logs.items():
     
 bank_textbox.configure(state='disabled')
 
-# === CC widjets ===
+# === CC Widjets ===
 cc_input_1_entry = ctk.CTkEntry(curency_frame,width=760,height=100,font=font_for_guis,corner_radius=25,justify='center')
 cc_input_1_entry.place(relx=0.5,y = 80,anchor="center")
 
@@ -496,7 +507,7 @@ cc_convert_btn.place(relx=0.5,y = 180,anchor="center")
 cc_output_label = ctk.CTkLabel(curency_frame,height=50,width=150,text=' ',font=font_for_guis,)
 cc_output_label.place(relx=0.5,y = 300,anchor="center")
 
-# --- Confirm Menu widjets ---
+# --- Confirm Menu Widjets ---
 text_label = ctk.CTkLabel(confirm_frame,text='Confirm?',font=font_for_guis)
 text_label.place(x= 200,y= 50,anchor="center")
 
@@ -506,7 +517,7 @@ yes_btn.place(x= 120,y= 120,anchor="center")
 no_btn = ctk.CTkButton(confirm_frame, text='No',font=font_for_guis,command = lambda: confirm(close_confirm,'No'))
 no_btn.place(x= 280,y= 120,anchor="center")
 
-# --- Settings Frame widjets ---
+# --- Settings Frame Widjets ---
 theme_label = ctk.CTkLabel(settings_funcs_frame,font=font_for_guis,text='Theme')
 theme_label.place(relx = 0.2,y =10)
 
@@ -519,7 +530,7 @@ system_currency_label.place(relx = 0.6,y =10)
 system_currency_option = ctk.CTkOptionMenu(settings_funcs_frame, values=currencies,corner_radius=25, font=font_for_text,command=change_sys_currency)
 system_currency_option.place(relx = 0.55,y =50)
 
-# --- News Frame widjets ---
+# --- News Frame Widjets ---
 news_search_entry = ctk.CTkEntry(news_frame,width=300,height=30,corner_radius=25)
 news_search_entry.place(relx= 0.4, rely= 0.08, anchor = 'center')
 
@@ -528,9 +539,9 @@ news_search_btn.place(relx= 0.65, rely= 0.08, anchor = 'center')
 
 news_textbox = ctk.CTkTextbox(news_frame,width=900,height=350,font=font_for_text)
 news_textbox.place(relx= 0.5, rely= 0.55,anchor = 'center')
-#
-main_page_news()
 # ====================================
+system_currency_option.set(system_currency)
+main_page_news()
 bank_text_label.lift()
 show_page('bank')
 
